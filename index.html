@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vortex | Admin Abuse Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        :root {
+            --primary: #a855f7;
+            --secondary: #6366f1;
+            --bg-dark: #050505;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(168, 85, 247, 0.3);
+            
+            --color-owner: linear-gradient(90deg, #ff4e50, #f9d423);
+            --color-admin: linear-gradient(90deg, #4facfe, #00f2fe);
+            --color-manager: linear-gradient(90deg, #6a11cb, #2575fc);
+            --color-dev: linear-gradient(90deg, #00cdac, #8ddad5);
+            --color-support: linear-gradient(90deg, #f093fb, #f5576c);
+            --color-mod: linear-gradient(90deg, #5ee7df, #b490ca);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: radial-gradient(circle at center, #1a0b2e 0%, #050505 100%);
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 30px;
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        nav a:hover { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        /* VOLUME UI */
+        .volume-container {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .volume-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+            font-size: 1.2rem;
+        }
+
+        .volume-dropdown {
+            margin-top: 10px;
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(20px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #vol-perc { font-family: 'Syncopate', sans-serif; font-size: 0.6rem; color: var(--primary); }
+
+        input[type="range"] { cursor: pointer; accent-color: var(--primary); width: 100px; }
+
+        /* SECTIES */
+        .page {
+            display: none;
+            width: 90%;
+            max-width: 1200px;
+            margin-top: 80px;
+            padding-bottom: 100px;
+            animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .hero { text-align: center; padding: 100px 0; }
+        .glitch {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #fff 20%, var(--primary) 40%, var(--secondary) 60%, #fff 80%);
+            background-size: 200% auto;
+            color: #000;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 5s linear infinite;
+        }
+
+        @keyframes shine { to { background-position: 200% center; } }
+
+        .team-container { display: flex; flex-direction: column; align-items: center; gap: 40px; }
+        .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; width: 100%; }
+        .grid-8 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; width: 100%; }
+
+        .divider-neon {
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+            box-shadow: 0 0 15px var(--primary);
+            margin: 20px 0;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 25px 15px;
+            border-radius: 20px;
+            text-align: center;
+            transition: 0.5s;
+            backdrop-filter: blur(10px);
+        }
+
+        .avatar-circle {
+            width: 70px; height: 70px; margin: 0 auto 15px; border-radius: 50%;
+            background: #111; border: 2px solid var(--primary);
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+            animation: pulse-border 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { box-shadow: 0 0 5px var(--primary); transform: scale(1); }
+            50% { box-shadow: 0 0 15px var(--primary); transform: scale(1.05); }
+        }
+
+        .role-badge {
+            margin-top: 10px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase;
+            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite, float-text 3s infinite ease-in-out;
+            display: inline-block;
+        }
+
+        @keyframes float-text { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+        .role-owner { background-image: var(--color-owner); }
+        .role-admin { background-image: var(--color-admin); }
+        .role-manager { background-image: var(--color-manager); }
+        .role-dev { background-image: var(--color-dev); }
+        .role-support { background-image: var(--color-support); }
+        .role-mod { background-image: var(--color-mod); }
+
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .info-box { background: rgba(255, 255, 255, 0.02); border-left: 4px solid var(--primary); padding: 30px; border-radius: 10px; }
+        .script-card { background: #000; padding: 20px; border-radius: 10px; font-family: monospace; border: 1px solid #333; margin-top: 15px; color: #0f0; }
+
+        @media (max-width: 900px) { .grid-5, .grid-8 { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+
+<div id="particles-js"></div>
+
+<div class="volume-container">
+    <button class="volume-btn" id="vol-toggle">🔊</button>
+    <div class="volume-dropdown" id="vol-menu">
+        <span id="vol-perc">30%</span>
+        <input type="range" id="volume-control" min="0" max="1" step="0.01" value="0.3">
+    </div>
+</div>
+
+<div class="content-wrapper">
+    <nav>
+        <a onclick="showPage('home')">Home</a>
+        <a onclick="showPage('team')">Team</a>
+        <a onclick="showPage('info')">Info</a>
+        <a onclick="showPage('scripts')">Community</a>
+    </nav>
+
+    <section id="home" class="page active">
+        <div class="hero">
+            <h1 class="glitch">AABS</h1>
+            <p style="letter-spacing: 5px; color: var(--primary); font-weight: bold; margin-bottom: 20px;">ADMIN ABUSE SERVER</p>
+            <p style="max-width: 700px; margin: 0 auto; line-height: 1.8; color: #bbb;">
+                Welcome to the Admin Abuse Server website, we sell a self-made panel with all kinds of events and functions, perfect for your game!
+            </p>
+        </div>
+    </section>
+
+    <section id="team" class="page">
+        <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 40px; font-family: 'Syncopate';">OUR TEAM:</h2>
+        <div class="team-container">
+            <div class="grid-5">
+                <div class="card"><div class="avatar-circle">👑</div><h3>Roky</h3><div class="role-badge role-owner">Owner</div></div>
+                <div class="card"><div class="avatar-circle">⚜️️</div><h3>Max</h3><div class="role-badge role-admin">Admin</div></div>
+                <div class="card"><div class="avatar-circle">🧑‍💼</div><h3>Levi</h3><div class="role-badge role-manager">Manager / Developer</div></div>
+                <div class="card"><div class="avatar-circle">💻</div><h3>Jake</h3><div class="role-badge role-dev">Developer</div></div>
+                <div class="card"><div class="avatar-circle">💻</div><h3>Bobasimi</h3><div class="role-badge role-dev">Developer</div></div>
+            </div>
+            <div class="divider-neon"></div>
+            <div class="grid-8">
+                <div class="card"><div class="avatar-circle">🎟️</div><h3>Tazz</h3><div class="role-badge role-support">High Support</div></div>
+                <div class="card"><div class="avatar-circle">🎫</div><h3>Manes</h3><div class="role-badge role-support">Support</div></div>
+                <div class="card"><div class="avatar-circle">🎫</div><h3>Kage</h3><div class="role-badge role-support">Junior Support</div></div>
+                <div class="card"><div class="avatar-circle">🎫</div><h3>Kyle</h3><div class="role-badge role-support">Junior Support</div></div>
+                <div class="card"><div class="avatar-circle">🎫</div><h3>Kenobi</h3><div class="role-badge role-support">Junior Support</div></div>
+                <div class="card"><div class="avatar-circle">🎫</div><h3>Man</h3><div class="role-badge role-support">Junior Support</div></div>
+                <div class="card"><div class="avatar-circle">🛡️</div><h3>Astro</h3><div class="role-badge role-mod">Moderator</div></div>
+                <div class="card"><div class="avatar-circle">🛡️</div><h3>Luau</h3><div class="role-badge role-mod">Moderator</div></div>
+                <div class="card"><div class="avatar-circle">🤖️</div><h3>Admin Abuse Bot</h3><div class="role-badge role-dev">Discord Bot</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="info" class="page">
+        <h2 style="margin-bottom: 30px; font-family: 'Syncopate'; color: var(--primary);">PROJECT INFO</h2>
+        <div class="info-grid">
+            <div class="info-box"><h3>OUR MISSION:</h3><p>We create a powerful Admin Abuse panel with all self-made events, perfect for if you want to keep an admin abuse in your game.</p></div>
+            <div class="info-box"><h3>SECURITY:</h3><p>We use Roblox Scripting in Roblox Studio. We also work with a special security system that ensures that no one can steal or resell it.</p></div>
+        </div>
+    </section>
+
+    <section id="scripts" class="page">
+        <h2 style="margin-bottom: 30px; font-family: 'Syncopate'; color: var(--secondary);">JOIN OUR COMMUNITY:</h2>
+        <div class="info-box">
+            <h3>DISCORD SERVER:</h3>
+            <p>Join our server to see all sneak peaks and announcements or to chat with our community!</p>
+            <div class="script-card">https://discord.com/invite/adminabuseserver</div>
+        </div>
+    </section>
+</div>
+
+<audio id="bg-music" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+<audio id="woosh-sound">
+    <source src="woosh.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    const bgMusic = document.getElementById('bg-music');
+    const wooshSound = document.getElementById('woosh-sound');
+    const volToggle = document.getElementById('vol-toggle');
+    const volMenu = document.getElementById('vol-menu');
+    const volControl = document.getElementById('volume-control');
+    const volPerc = document.getElementById('vol-perc');
+
+    // Toggle menu
+    volToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        volMenu.style.display = volMenu.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    document.addEventListener('click', () => volMenu.style.display = 'none');
+    volMenu.addEventListener('click', (e) => e.stopPropagation());
+
+    // Volume update
+    volControl.addEventListener('input', (e) => {
+        const v = e.target.value;
+        bgMusic.volume = v;
+        volPerc.innerText = Math.round(v * 100) + "%";
+        volToggle.innerText = v == 0 ? "🔇" : "🔊";
+    });
+
+    // Start bij klik
+    window.addEventListener('mousedown', () => {
+        if (bgMusic.paused) {
+            bgMusic.play().catch(() => {});
+            bgMusic.volume = volControl.value;
+        }
+    }, { once: true });
+
+    function showPage(pageId) {
+        wooshSound.currentTime = 0;
+        wooshSound.volume = volControl.value;
+        wooshSound.play().catch(() => {});
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    particlesJS('particles-js', {
+        particles: {
+            number: { value: 80 },
+            color: { value: "#a855f7" },
+            shape: { type: "circle" },
+            opacity: { value: 0.5 },
+            size: { value: 3 },
+            line_linked: { enable: true, distance: 150, color: "#6366f1", opacity: 0.3, width: 1 },
+            move: { enable: true, speed: 2, out_mode: "out" }
+        },
+        interactivity: {
+            events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" } }
+        }
+    });
+</script>
+</body>
+</html>
