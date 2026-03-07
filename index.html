@@ -124,7 +124,10 @@
         .card {
             background: var(--card-bg); border: 1px solid var(--border); padding: 25px 15px;
             border-radius: 20px; text-align: center; transition: 0.5s; backdrop-filter: blur(10px);
+            cursor: pointer;
         }
+
+        .card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.08); border-color: var(--primary); }
 
         .avatar-circle {
             width: 70px; height: 70px; margin: 0 auto 15px; border-radius: 50%;
@@ -142,6 +145,30 @@
             background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: shine 3s linear infinite, float-text 3s infinite ease-in-out; display: inline-block;
         }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            z-index: 2000; display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+        .modal-content {
+            background: var(--bg-dark); border: 2px solid var(--primary);
+            padding: 50px; border-radius: 30px; text-align: center;
+            transform: scale(0.7); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; box-shadow: 0 0 50px rgba(168, 85, 247, 0.2);
+            min-width: 320px;
+        }
+        .modal-overlay.open { display: flex; opacity: 1; }
+        .modal-overlay.open .modal-content { transform: scale(1); }
+        .modal-close {
+            position: absolute; top: 20px; right: 20px; font-size: 1.5rem;
+            cursor: pointer; color: var(--primary);
+        }
+        .modal-avatar { width: 120px; height: 120px; font-size: 3rem; margin-bottom: 20px; }
+        .modal-name { font-family: 'Syncopate'; font-size: 2rem; margin-bottom: 10px; }
+        .modal-role { font-size: 1rem; }
 
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
         .info-box { background: var(--card-bg); border-left: 4px solid var(--primary); padding: 30px; border-radius: 10px; }
@@ -182,6 +209,19 @@
         .progress-container { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 15px; overflow: hidden; }
         .progress-bar { height: 100%; width: 0%; border-radius: 10px; transition: width 2s cubic-bezier(0.4, 0, 0.2, 1); background: var(--primary); box-shadow: 0 0 10px var(--primary); }
 
+        /* NEWS PAGE STYLES */
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin-top: 20px; }
+        .news-card {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px;
+            overflow: hidden; backdrop-filter: blur(10px); transition: 0.3s ease;
+        }
+        .news-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .news-img { width: 100%; height: 200px; background: #111; object-fit: cover; border-bottom: 1px solid var(--border); }
+        .news-body { padding: 25px; }
+        .news-date { font-family: 'Syncopate'; font-size: 0.6rem; color: var(--primary); margin-bottom: 10px; display: block; }
+        .news-title { margin-bottom: 10px; font-family: 'Syncopate'; font-size: 1.1rem; }
+        .news-text { opacity: 0.7; font-size: 0.9rem; line-height: 1.6; }
+
         @media (max-width: 900px) { .grid-5, .grid-8 { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
@@ -189,6 +229,15 @@
 
 <div id="particles-js"></div>
 <div id="theme-props"></div>
+
+<div class="modal-overlay" id="team-modal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="modal-close" onclick="closeModal()">×</span>
+        <div id="modal-avatar" class="avatar-circle modal-avatar"></div>
+        <h2 id="modal-name" class="modal-name"></h2>
+        <div id="modal-role" class="role-badge modal-role"></div>
+    </div>
+</div>
 
 <div class="controls-container">
     <div style="position: relative;">
@@ -218,6 +267,7 @@
         <a onclick="showPage('home')">Home</a>
         <a onclick="showPage('team')">Team</a>
         <a onclick="showPage('info')">Info</a>
+        <a onclick="showPage('news')">News</a>
         <a onclick="showPage('status')">Status</a>
         <a onclick="showPage('scripts')">Community</a>
     </nav>
@@ -236,23 +286,23 @@
         <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 40px; font-family: 'Syncopate';">OUR TEAM:</h2>
         <div class="team-container">
             <div class="grid-5">
-                <div class="card"><div class="avatar-circle">👑</div><h3>Roky</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #ff4e50, #F600FF);">Owner</div></div>
-                <div class="card"><div class="avatar-circle">⚜️️</div><h3>Max</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #B300FF, #FF00CC);">Admin</div></div>
-                <div class="card"><div class="avatar-circle">🧑‍💼</div><h3>Levi</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #00C8FF, #2575fc);">Manager / Developer</div></div>
-                <div class="card"><div class="avatar-circle">💻</div><h3>Jake</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #E6099C, #E609D8);">Developer</div></div>
-                <div class="card"><div class="avatar-circle">💻</div><h3>Bobasimi</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #E6099C, #E609D8);">Developer</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">👑</div><h3>Roky</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #ff4e50, #F600FF);">Owner</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">⚜️️</div><h3>Max</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #B300FF, #FF00CC);">Admin</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">🧑‍💼</div><h3>Levi</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #00C8FF, #2575fc);">Manager / Developer</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">💻</div><h3>Jake</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #E6099C, #E609D8);">Developer</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">💻</div><h3>Bobasimi</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #E6099C, #E609D8);">Developer</div></div>
             </div>
             <div class="divider-neon"></div>
             <div class="grid-8">
-                <div class="card"><div class="avatar-circle">🎟️</div><h3>Tazz</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #F0E10E, #877F0B);">High Support</div></div>
-                <div class="card"><div class="avatar-circle">🎫</div><h3>Manes</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #F71616, #A11313);">Support</div></div>
-                <div class="card"><div class="avatar-circle">🎫</div><h3>Kage</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #FC2626, #F54E4E);">Junior Support</div></div>
-                <div class="card"><div class="avatar-circle">🎫</div><h3>Kyle</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #FC2626, #F54E4E);">Junior Support</div></div>
-                <div class="card"><div class="avatar-circle">🎫</div><h3>Kenobi</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #FC2626, #F54E4E);">Junior Support</div></div>
-                <div class="card"><div class="avatar-circle">🎫</div><h3>Man</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #FC2626, #F54E4E);">Junior Support</div></div>
-                <div class="card"><div class="avatar-circle">🛡️</div><h3>Astro</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #0F0B80, #2B63BD);">Moderator</div></div>
-                <div class="card"><div class="avatar-circle">🛡️</div><h3>Luau</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #0F0B80, #2B63BD);">Moderator</div></div>
-                <div class="card"><div class="avatar-circle">🤖️</div><h3>Admin Abuse Bot</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #A005E5, #242323);">Discord Bot</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">🎟️</div><h3>Tazz</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #F0E10E, #877F0B);">High Support</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">🎫</div><h3>Manes</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #F71616, #A11313);">Support</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">🎫</div><h3>Kage</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #FC2626, #F54E4E);">Junior Support</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">🎫</div><h3>Kyle</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #FC2626, #F54E4E);">Junior Support</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">🎫</div><h3>Kenobi</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #FC2626, #F54E4E);">Junior Support</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">🎫</div><h3>Man</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #FC2626, #F54E4E);">Junior Support</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">🛡️</div><h3>Astro</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #0F0B80, #2B63BD);">Moderator</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">🛡️</div><h3>Luau</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #0F0B80, #2B63BD);">Moderator</div></div>
+                <div class="card" onclick="openModal(this)"><div class="avatar-circle">🤖️</div><h3>Admin Abuse Bot</h3><div class="role-badge" style="background-image: linear-gradient(90deg, #A005E5, #242323);">Discord Bot</div></div>
             </div>
         </div>
     </section>
@@ -262,6 +312,28 @@
         <div class="info-grid">
             <div class="info-box"><h3>OUR MISSION:</h3><p>We create a powerful Admin Abuse panel with all self-made events, perfect for if you want to keep an admin abuse in your game.</p></div>
             <div class="info-box"><h3>SECURITY:</h3><p>We use Roblox Scripting in Roblox Studio. We also work with a special security system that ensures that no one can steal or resell it.</p></div>
+        </div>
+    </section>
+
+    <section id="news" class="page">
+        <h2 style="margin-bottom: 30px; font-family: 'Syncopate'; color: var(--primary);">LATEST NEWS</h2>
+        <div class="news-grid">
+            <div class="news-card">
+                <img src="https://i.postimg.cc/8cH52TQT/SPOILER-image.webp" alt="News Image" class="news-img">
+                <div class="news-body">
+                    <span class="news-date">07-03-2026 | 12:43</span>
+                    <h3 class="news-title">Sneakpeak👀</h3>
+                    <p class="news-text">Sneakpeak of an upcoming event!</p>
+                </div>
+            </div>
+            <div class="news-card">
+                <img src="https://i.postimg.cc/mDS8LD9C/6d4cc70373e5ae47d6e471bde7daea55.webp" alt="News Image" class="news-img">
+                <div class="news-body">
+                    <span class="news-date">07-03-2026 | 09:24</span>
+                    <h3 class="news-title">Our Website</h3>
+                    <p class="news-text">We have made our brand new website, here you can check news, see our team and much more!</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -316,8 +388,31 @@
 <audio id="woosh-sound"><source src="woosh.mp3" type="audio/mpeg"></audio>
 
 <script>
+    // --- MODAL FUNCTIONS ---
+    function openModal(card) {
+        const modal = document.getElementById('team-modal');
+        const icon = card.querySelector('.avatar-circle').innerHTML;
+        const name = card.querySelector('h3').innerText;
+        const role = card.querySelector('.role-badge').innerText;
+        const roleStyle = card.querySelector('.role-badge').style.backgroundImage;
+
+        document.getElementById('modal-avatar').innerHTML = icon;
+        document.getElementById('modal-name').innerText = name;
+        const modalRole = document.getElementById('modal-role');
+        modalRole.innerText = role;
+        modalRole.style.backgroundImage = roleStyle;
+
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('open'), 10);
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('team-modal');
+        modal.classList.remove('open');
+        setTimeout(() => modal.style.display = 'none', 400);
+    }
+
     // --- STATUS CONFIGURATIE ---
-    // Status opties: 'online', 'offline', 'maintenance', 'malfunction'
     const statusConfig = {
         bot: { status: 'online', uptime: 100 },
         web: { status: 'online', uptime: 100 },
@@ -329,13 +424,10 @@
             const cfg = statusConfig[key];
             const textEl = document.getElementById(`stat-text-${key}`);
             const barEl = document.getElementById(`bar-${key}`);
-            const percEl = document.getElementById(`perc-db`); // Fix for ID mismatch if needed
             
-            // Set Text & Dot
             textEl.className = `status-text stat-${cfg.status}`;
             textEl.innerHTML = `<span class="status-dot ${cfg.status === 'malfunction' ? 'stat-malfunction-dot' : ''}"></span>${cfg.status}`;
             
-            // Set Bar
             setTimeout(() => {
                 barEl.style.width = cfg.uptime + "%";
                 document.getElementById(`perc-${key}`).innerText = cfg.uptime + "%";
