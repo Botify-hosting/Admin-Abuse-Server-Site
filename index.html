@@ -90,7 +90,7 @@
         input[type="range"] { cursor: pointer; accent-color: var(--primary); width: 100px; }
 
         .page {
-            display: none; width: 90%; max-width: 1200px; margin-top: 80px; padding-bottom: 100px;
+            display: none; width: 90%; max-width: 1200px; margin-top: 80px; padding-bottom: 40px;
             animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -221,6 +221,35 @@
         .news-date { font-family: 'Syncopate'; font-size: 0.6rem; color: var(--primary); margin-bottom: 10px; display: block; }
         .news-title { margin-bottom: 10px; font-family: 'Syncopate'; font-size: 1.1rem; }
         .news-text { opacity: 0.7; font-size: 0.9rem; line-height: 1.6; }
+
+        /* FOOTER STYLES */
+        footer {
+            width: 100%;
+            padding: 40px 20px;
+            margin-top: auto;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-copy {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--text);
+            opacity: 0.6;
+        }
+
+        .footer-rights {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-top: 10px;
+            color: var(--primary);
+            font-weight: bold;
+        }
 
         @media (max-width: 900px) { .grid-5, .grid-8 { grid-template-columns: repeat(2, 1fr); } }
     </style>
@@ -382,7 +411,16 @@
             </div>
         </div>
     </section>
-</div>
+
+    <footer>
+        <div class="footer-copy">
+            © <span style="color: var(--primary);">Admin Abuse Server</span> | 2025-2026
+        </div>
+        <div class="footer-rights">
+            All Rights Reserved
+        </div>
+    </footer>
+    </div>
 
 <audio id="bg-music" loop><source src="music.mp3" type="audio/mpeg"></audio>
 <audio id="woosh-sound"><source src="woosh.mp3" type="audio/mpeg"></audio>
@@ -429,8 +467,9 @@
             textEl.innerHTML = `<span class="status-dot ${cfg.status === 'malfunction' ? 'stat-malfunction-dot' : ''}"></span>${cfg.status}`;
             
             setTimeout(() => {
-                barEl.style.width = cfg.uptime + "%";
-                document.getElementById(`perc-${key}`).innerText = cfg.uptime + "%";
+                if(barEl) barEl.style.width = cfg.uptime + "%";
+                const percEl = document.getElementById(`perc-${key}`);
+                if(percEl) percEl.innerText = cfg.uptime + "%";
             }, 500);
         });
     }
